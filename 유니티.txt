@@ -1,0 +1,410 @@
+유니티
+★★★ GameAIfy API Key : 4175d8ded1aa4906898fc3954b1a2ece
+★★★ GameAIfy Secret Key : 4ff3ca1db76642a09b237ab9e3d1a85f
+ctrl + H -> 찾으려는 텍스트와 바꾸려는 텍스트 설정 가능
+
+
+1.1-1 프로젝트 제작의 이해
+※ 효율적인 개발 방식 : 각 직군별 결과물 확인 및 적용이 타 직군에 의존적 x 독립적 형태 진행!	=> 결과물 퀄리티 ↑, 개발 기간 단축에 인한 제작비 부담 감소 => 효율적 개발 
+아트
+  ↑
+기획자	→	결과물
+   ↓
+프로그래머
+
+
+1.1-2 직군
+ⅰ. PD(Project Director), Director, PM(Project Manager)
+PD : 콘텐츠 전체 방향 결정하는 역할 (영화감독과 비슷)
+Director : 콘텐츠 제작 방향을 결정하고 책임 및 관리 감독하는 역할 (= 파트장)
+PM : 프로젝트 일정과 팀원 간의 의사결정 조율하는 역할
+
+ⅱ. 기획 : 콘텐츠 설계도 만드는 사람 (시나리오 기획, 시스템 기획, 콘텐츠 기획, 레벨 디자인 기획 등)
+ⅲ. 프로그램 : 기획 결과물 + 아트 결과물 바탕으로 실제 동작하는 콘텐츠 구현하는 직군, 클라이언트와 서버로 나뉨.
+클라이언트 : 엔진, 콘텐츠 제작에 도움을 주는 저작 도구 개발, (이야기 구성 및 기획자 작업) 스크립터, (사용자 상호작용) UI(User Interface) 작업으로 나뉨
+서버 : 사용자 통신 네트워크와 사용자 데이터 기록하는 DB, 해킹 위험 방어하는 보안 작업으로 나뉨.
+
+ⅳ. 아트 : 콘텐츠 디자인 관련 요소 만드는 직군, TA(Technical Artist, 기술 직군과 아트 직군의 불필요한 의사소통 줄여 콘텐츠 품질 향상시키는 역할) 직군도 생김
+
+
+1.3-2 유니티 화면 구성 알아보기
+1. 씬(Scene) : 게임 오브젝트을 확인하거나 조작할 수 있는 창
+2. 하이어라키(Hierarchy) 뷰 : 씬 뷰에서 보이는 게임 오브젝트 목록 관리하는 창
+3. 인스펙터(Inspector) 뷰 : 게임 오브젝트가 어떠한 컴포넌트로 이뤄져 있는지 확인하고 수정할 수 있는 창
+4. 프로젝트(Project) 뷰 : 콘텐츠 제작에 필요한 파일, 리소스 등 관리하는 창
+5. 게임(Game) 뷰 : 제작하는 콘텐츠 실행했을 때 보이는 창
+
+1.3-3 유니티 기본 성능
+- 마우스 우클릭 + q(화면 아래로),w(확대),e(화면 위로),a(화면 왼쪽),s(축소),d(화면 오른쪽)
+- alt + 마우스 좌클릭 : 씬 장면 중심으로 화면 돌리기
+- 렉트(rect) 툴 : 스케일 툴과 달리 크기가 한 쪽으로 변함, 주로 2D 오브젝트 조정할 때 주로 사용
+- 오브젝트 선택하고 ctrl + d : 오브젝트 복제 (언리얼 엔진의 ctrl + c, ctrl + v의 압축버전)
+- 버텍스 스냅핑(Vertex Snapping) : 두 오브젝트가 있을 때 정확하게 붙일 수 있는 기능, v키를 누른채 오브젝트의 꼭지점에 커서를 이동시키면 기즈모(Gizmo)가 해당 꼭지점으로 이동, 다른 오브젝트의 꼭지점과 붙음.
+
+
+
+2. 슈팅게임 만들기
+※ 3D의 특징 : Persp(Perspective, 원근감)과 ISO(isometric, 쿼터 뷰(직교 모드, 원근감이 없는 상태))
+※ Main Camera 오브젝트 종류
+- Camera Component : 카메라
+- Audio Listener : 사람의 귀 (★씬에 단 하나만 있어야 함!)
+- Projection 속성 : 렌즈(투영), 화면에 보이는 영상을 원근감 있게 표현할 것인지 지정하는 속성
+- Size 속성 : 카메라 세로 크기의 절반 (단위 : m)
+- 조명(Directional Light) 설정 : 3D에서 필요하며 2D에서는 경우에 따라 쓰이기 함 (거의 안씀)
+- 해상도(Resolution) 설정 : Game 창의 툴파에 있음. 디폴트로 "Free Aspect"로 설정되어 있으며 "+" 버튼을 눌러 사용자 지정 설정이 가능함.
+
+2-1. 플레이어 이동 제작
+※ GameObject, MonoBehaviour 클래스를 상속받는 스크립트(PlayerMove) 필요	-> Player Component에 드래그
+- 벡터의 정규화(Normalize) : 벡터 크기를 1로 만들어주는 동작	-> 우리의 속도(m/s)로 사용
+★ 라이프사이클 함수(Life Cycle Function) : 일어나는 횟수, 일어나는 때를 아는지 여부	ex) Start, Update, OnDestroy 함수
+★ deltaTime : delta는 "변화된 것"을 의미(=시간이 변한 값), 시스템 간의 동기화를 위해 사용
+- 스크립트 코드에 Update() 함수에 다음 코드를 입력
+transform.Translate(Vector3.right (or left, forward, back, up, down) * 5 * Time.deltaTime);		-> deltatime만큼 방향키값 증가
+
+- 사용자 입력 처리코드 : float h = Input.GetAxis("Horizontal");		// A, D		float v = Input.GetAxis("Vertical");	// W, S
+★ 다음 사용자 입력 처리코드를 빌드한 후 실행하면 다음 오류가 발생할 수 있음 (안 발생하면 정상실행이 되고 있다는 뜻임).
+InvalidOperationException: You are trying to read Input using the UnityEngine.Input class, but you have switched active Input handling to Input System package in Player Settings.
+UnityEngine.Internal.InputUnsafeUtility.GetAxis (System.String axisName) (at <7392f0fe1c014b608788bdeecdaad64d>:0)
+UnityEngine.Input.GetAxis (System.String axisName) (at <7392f0fe1c014b608788bdeecdaad64d>:0)
+PlayerMove.Update () (at Assets/Scripts/PlayerMove.cs:19)
+이 의미는 "Unity Input System을 사용하도록 설정했지만, 코드에서는 기존의 UnityEngine.Input 클래스를 사용하려고 해서 충돌이 발생하고 있다"이므로 크래쉬 문제가 발생한다.
+따라서 이를 해결하려면 Edit -> Project Settings -> Player로 이동하고 Other Settings > Active Input Handling 항목을 찾아 드롭다운에서 "Both" 또는 "Input Manager"로 변경하고 재시작해야한다.
+
+- 방향 만들기
+Vector3 dir = new Vector3(h, v, 0);
+transform.Translate(dir * speed * Time.deltaTime);
+
+- 사용자 입력 처리를 P = P0 + vt 공식으로 변경 (위 코드의 사용자 입력 처리 코드들과 방향 만들기의 첫번째 코드는 동일)
+transform.position += dir * speed * Time.deltaTime;
+
+※ SDK와 API의 차이 (둘다 유니티에 내포되어 있음)
+SDK : 개발에 필요한 모든 기능을 제조사에서 이미 다 만들어 제공하는 것
+API : 건드리면 안되는 중요한 기능 외 콘텐츠 제작에 필요한 기능을 공개하는 것, 주로 뒤에서 Reference, Document와 같은 단어들이 붙음.
+
+
+2-2. 총알 제작
+※ GameObject, MonoBehaviour 클래스를 상속받는 스크립트 필요(Bullet)	-> Bullet Component에 드래그
+- 위 플레이어 이동 제작과 코드는 동일하나 사용자 입력 처리만 제거한다.
+방향 구하기 : Vector3 dir = Vector3.up;
+이동, P = P0 + vt 로 구현 : transform.position += dir * speed * Time.deltaTime;
+
+
+2-3. 사용자 발사 버튼을 눌러 총알 발사하기
+※ GameObject, MonoBehaviour 클래스를 상속받는 스크립트 필요(PlayerFire)	-> Player Component에 드래그
+★ Project 창에 폴더를 만들고 Hierarchy 창에 있는 컴포넌트를 폴더에 드래그하면 링크가 걸림(파란색으로 표시됨).		-> 폴더에 저장되어 있다는 뜻이므로 삭제해도 됨.
+※ 버튼 이벤트 : GetButtonDown(누를 때), GetButtonUp(땔 때), GetButton(계속 누를때)
+
+2-4. 적 이동 제작과 충돌
+※ GameObject, MonoBehaviour 클래스 상속받는 스크립트 필요(Enemy)	-> Enemy Component에 드래그
+방향 구하기 : Vector3 dir = Vector3.down;
+이동, P = P0 + vt 로 구현 : transform.position += dir * speed * Time.deltaTime;
+※ 충돌체 : 두 개이상의 게임 오브젝트의 몸체 필요, 박스 콜라이더(box Collider)에 있음.
+※ 리자드바디(RigidBody) : 움직이는 물체와 움직이지 않는 물체를 구분하는 것
+★★ 결론 : 유니티에서 충돌하기 위해서 두 개 이상의 물체가 충돌체를 갖고 있어야 하며, 둘 중 하나느 꼭 리지드바디가 있어야 함!
+★★★ 이벤트 함수 : 구현부에서 물체가 부딪히면 알아서 호출하는 함수, 접두어 On 사용, private void OnCollisionEnter(Collision collision), private void OnCollisionStay(Collision collision), private void OnCollisionExit(Collision collision) 등이 있음, 구현 방식은 "너 죽고 나 죽자"
+
+2-5. 적 자동 생성
+Prefabs 폴더(게임 오브젝트를 파일로 만든 것)로 Enemy Object 이동, MonoBehaviour 상속받는 스크립트 필요 (EnemyManager)
+현재시간, 일정시간, 적 공장 변수를 선언하고 현재시간(+= Time.deltaTime) > 일정시간이 되면 적을 생산하고 현재시간을 초기화한다.
++ 적의 생성 시간을 랜덤으로 설정 	-> Start() 함수 안에 "현재시간 = UnityEngine.Random.Range(minTime, maxTime);" 구현,  Update()함수 안에 "일정시간 = UnityEngine.Random.Range(minTime, maxTime);" 구현
+
+2-6. 적 인공지능(플레이어 방향 찾기)
+GameObject 객체를 하나 생성하고 Player 객체의 방향을 반환해 그쪽으로 가게 만든다.
+GameObject target = GameObject.Find("Player");
+// 방향구하기
+dir = target.transform.position - transform.position;
+// 방향 크기 1로 설정
+dir.Normalize();
+
+2-7. DestroyZone과 충돌 감지
+충돌감지하는 DestroyZone 객체를 하나 만들고 is Trigger (물리적 충돌 효과 발생 x, 영역 감지 센서 역할) 체크 후 리지드바디 컴포넌트를 만들어 Is Kinematic(충돌할 수 있는 물체로 알려주되, 물리적 행동x) 체크, MonoBehavior 상속받는 스크립트 필요 (DestroyZone)
+각 DestroyZone을 나뉘어서 실행하면 겹친 부분 때문에 없어진다. 이를 해결하려면
+객체 클릭 -> Inspector -> Layer -> Add Layer -> DestroyZone을 입력 후 모든 DestroyZone 객체를 Destroy Layer로 바꾼 후 Project Setting에서 Physics -> Layer Collision Matrix에서 자기 자신 충돌 체크박스를 해제한다. 마찬가지로 Player, Enemy, Bullet도 같은 방법으로 실행하여 자기들끼리 충돌하면 사라지지 않도록 Layer를 만들고 Collision 체크박스를 해제한다.
+
+
+
+3-1. 알파버전 만들기
+- Scene 폴더 목적 : 다운로드한 애셋 사용법을 데모 씬으로 제작해 배포
+- Prefabs 폴더 : 게임오브젝트를 애셋으로 만든 것
+애셋 스토어에 애셋을 다운로드 후 유니티 프로젝트에 임포트한 다음 Prefabs 폴더의 애셋을 Player에 장착하고 부모(Player)에 있는 Mesh Renderer, Mesh Filter 컴포넌트를 제거한다.
+
+3-2. 충돌효과 삽입
+충돌 효과 애셋을 다운로드 한후 Enemy.cs에서 폭발 효과 발생하는 코드 작성
+// 폭발 효과 객체 생성
+GameObject explosion = Instantiate(explosionFactory);
+
+// 폭발 효과 발생
+explosion.transform.position = transform.position;
+
+3-3. 배경 삽입
+애셋 배경을 inspector탭에서 확인하면 ★Wrap Mode가 있다.
+기본설정 : Repeat
+Clamp : 원래 크기보다 더 많은 부분을 그리려고 할 때 크기를 넘어가는 부분을 잘려지게 그리게 하는 설정
+★ offset : 배경 스크롤의 한 장을 회전시키는 것
+-> 3D Quad 객체와 Material 객체를 만들어 Material에 배경 애셋을 Base Map으로 드래그한 후 Material 객체를 3D Quad의 Element 0으로 드래그시킨다.
+
+Background 스크립트를 만들어 시간이 지날때마다 위에서 아래로 배경 스크롤이 이동하도록 작성한다.
+ Vector2 direction = Vector2.up; // offset은 x,y값만 존재하므로 Vector2 객체를 써야 함.
+ bgMaterial.mainTextureOffset += direction * scrollSpeed * Time.deltaTime;
+
+3-4. 사운드 추가
+폭발 효과, Bullet Component, Background 객체에 각각 Audio Resource 컴포넌트를 추가한 후 Audio Resource란에 각 컴포넌트 요소를 넣는다. 단, Background만 Loop를 체크한다.
+
+3-5. 점수 표시
+UI : 앵커 프리셋(Anchor Preset)을 제공(어느 곳을 기준으로 배치될 것인지 정하는 기능)
+
+3-5.1 현재 점수 UI 표시
+UI - Legacy - Text로 하나 만듦.	->	Rect Transform 컴포넌트에 좌측 상단 기준으로 정렬	->	Text 컴포넌트 안에 Text, Font Size, Horizontal Overflow 값을 각각 설정한다.
+
+3-5.2 최고 점수 UI 표시
+만든 현재 점수 UI를 복사하고 위치값을 변경한다.
+
+3-5.3 적 처치 시 점수 표시
+하이어라키 뷰에 Create Empty 선택하여 객체와 스크립트(Manager) 만들기	->	스크립트 안에서 using 지시어 추가 (using UnityEngine.UI;)	-> 	변수 2개 (현재 점수(int)와 현재 점수 UI(Text)) 생성	->	Enemy 스크립트 안의 OnCollisionEnter 함수 안에서 폭발 효과 전 맨 처음 줄에 코드 할당
+
+// 씬에서 ScoreManager 객체 찾기
+GameObject SmObject = GameObject.Find("ScoreManager");
+
+// ScoreManager 게임 오브젝트에서 얻어오기
+ScoreManager sm = SmObject.GetComponent<ScoreManager>();
+
+// ScoreManager 클래스 속성 값 할당
+sm.currentScore++;
+
+// 화면에 점수 표시
+sm.currentScoreUI.text = "현재 점수 : " + sm.currentScore;
+
+★★ 유니티에서 자료형이 Text 컴포넌트로 들어오도록 지정했는데 게임 오브젝트 자료형을 끌고 오는 경우가 있다. 이 경우에는 두 자료형이 맞지 않기 때문에 오류가 나야 하지만, 해당 게임 오브젝트에 있는 컴포넌트 중 Text로 된 컴포넌트가 있으면 자동으로 그것을 찾아 할당한다.
+
+3-5.4 최고 점수 표시
+Manager 스크립트 안에 변수 2개 (최고 점수(int)와 최고 점수 UI(Text)) 생성	->	현재 점수가 최고 점수보다 높으면 갱신
+
+// 현재 점수가 최고 점수보다 크면
+if(sm.currentScore > sm.bestScore)
+{
+    // 최고 점수 갱신
+    sm.bestScore = sm.currentScore;
+
+    // 최고 점수 UI 표시
+    sm.bestScoreUI.text = "최고 점수 : " + sm.bestScore;
+}
+
+※ 실행하고 나서 다시 껐다가 키면 최고 점수가 초기화되어 있는데 이는 최고 점수를 기억하지 못하기 때문에 ★PlayerPrefs(파일을 저장하는 방식) 객체 사용한다.
+	1. 저장(Set함수 사용)	->	Enemy.cs의 if문 마지막에 작성
+		PlayerPrefs.SetInt("Best Score", sm.bestScore); // 최고 점수 저장
+	2. 불러오기 (Get함수 사용)	-> Manager.cs의 void Start() 안에 작성
+		// 최고 점수 불러오기
+		bestScore = PlayerPrefs.GetInt("Best Score", 0);
+
+		// 최고 점수 화면 표시
+		bestScoreUI.text = "최고 점수 : " + bestScore;
+
+※ but, 이 코딩 방식은 데이터처리방식에 잘못된 표현이므로 캡슐화를 해줘야 한다. 즉, Enemy는 죽었는지 확인하고, Manager는 Score를 관리하는 역할을 해줘야 한다. (코딩 방식은 .cs파일 참고)
+
+
+4. 베타타입 버전
+알파타입 버전이 끝나면 다음과 같은 작업이 필요
+	1. 클라이언트의 의견을 수렴해 조금씩 반영 (대규모 반영 x)
+	2. 최적화 (프로젝트 설계, 속도, 메모리, 디자인 퀄리티, 플랫폼 대응 등)
+	3. 디버깅
+
+4-1. 싱글턴 디자인 패턴으로 관리자 만들기
+★ static (정적 영역) : 프로그램 실행하기 전에 생성되어 있는 키워드
+★★ 싱글턴 디자인 패턴 : 단 하나의 객체 인스턴스를 static으로 등록해 놓고 사용하는 방식
+
+싱글턴 객체 선언은 주로 Manager이름의 객체 안에서 선언한다.
+ScoreManager.cs
+// 싱글턴 객체
+public static ScoreManager Instance = null;
+
+// 싱글턴 객체에 값이 없으면 생성된 자기 자신 할당
+void Awake()
+{
+    if(Instance == null)
+    {
+        Instance = this;
+    }    
+}
+
+Enemy.cs의 OnCollisionEnter 함수 내부
+// 에너미 잡을 때마다 현재 점수 표시
+ScoreManager.Instance.SetScore(ScoreManager.Instance.GetScore() + 1);		-> 3-5.4의 캡슐화 코드를 보다 더 간결하게 작성함.
+
+
+★★ Get/Set 프로퍼티(Property) : get과 set 함수의 기능의 접근을 변수처럼 편리하고 효율적 방식을 도입한 것, 선언은 변수, 몸체는 함수
+위 코드에서 Get/Set 프로퍼티를 활용한다.
+ScoreManager.cs에서 기존 GetScore, SetScore 함수를 제거하고 다음 코드를 작성
+public int Score
+{
+    get
+    {
+        return currentScore;
+    }
+    set
+    {
+        // 씬에서 ScoreManager 클래스 속성 값 할당
+        currentScore = value;
+
+        // 화면에 현재 점수 표시
+        currentScoreUI.text = "현재 점수 : " + currentScore;
+
+        // 현재 점수가 최고 점수보다 크면
+        if (currentScore > bestScore)
+        {
+            // 최고 점수 갱신
+            bestScore = currentScore;
+
+            // 최고 점수 UI 표시
+            bestScoreUI.text = "최고 점수 : " + bestScore;
+
+            // 최고 점수 저장
+            PlayerPrefs.SetInt("Best Score", bestScore);
+        }
+    }
+}
+
+Enemy.cs의 ScoreManager.Instance.SetScore(ScoreManager.Instance.GetScore() + 1); 코드 부분을 다음과 같이 수정
+-> ScoreManager.Instance.Score++;
+
+4-2. 오브젝트 풀(Object Pool)을 이용한 메모리 관리
+★ 오브젝트 풀 : 객체를 풀(pool)로 만든 것
+커넥션 풀(Connection Pool) : 네트워크 연결에 관련된 풀을 미리 잡아 놓은 것
+상호작용(충돌)이 일어나는 모든 cs 파일에 객체 대신 GameObject 배열로 생성하여 오브젝트 풀에 관리하도록 수정한다.	->	 충돌이 일어나면 배열의 경우 for문을 사용하여 하나씩 비활성화된 것들을 활성화시키고, 충돌이 끝나면 오브젝트 풀에 자원을 반납하도록 한다.
+
+※ 라이프사이클 함수 호출 순서
+Awake 	->	OnEnable(객체가 활성화될 때마다 호출됨, but 무조건 Start 함수가 호출되는 것이 아니므로 OnEnable -> Update 식으로 실행됨, Start 함수는 실행 중 단 한 번만 실행함.) 	->	Start	->	Update	->	OnDestroy
+
+★★ 메모리 관리 방법으로 배열을 이용한 코드와 연결리스트를 활용한 코드가 있는데 배열의 경우 빠른 삽입과 검색이 가능하지만, 배열 데이터가 많을수록 느려지는 단점이 있다. 이를 해결하기 위해서 리스트를 사용하며 검색이 느리지만 빠른 삽입/삭제 속도가 빠르다.
+
+4-3. 모바일 조이스틱 입력 대응하기
+프리팹(Prefab) : 게임 오브젝트를 애셋으로 만드는 것
+프리팹 인스턴스(Prefab Instance) : 프리팹을 사용하기 위해 씬에 등록한 객체
+패킹(packing) : 프리팹을 만드는 과정
+언패킹(unpacking) : 프리팹을 되돌리는 과정
+	※ Unpack Prefab vs Unpack Prefab Completely
+		Unpack Prefab : 자식 객체에 대한 언패킹 고려 x
+		Unpack Prefab Completely : 프리팹 인스턴스가 포함하고 있는 자식 객체도(nested prefab) 프리팹 인스턴스가 있는 경우까지 모두 언패킹하는 기능
+콜백함수(callback) : 다른 객체에게 하도록 하고, 그 일이 끝나면 그 객체가 끝났다고 알려주는 함수
+
+4-4. PC 및 모바일 빌드
+빌드(Build) : 실행할 수 있는 형태로 프로젝트를 내보내기 하겠다는 의미	=> 실행 파일 만들기
+※ PC 환경 파이프라인(작업 진행할 때의 공정 단계) 빌드
+	1단계 : 씬 파일 등록
+		[File] - [Build Profiles] 클릭	->	Add Open Scenes 버튼을 클릭해 씬 파일을 등록하거나 씬 파일을 Scenes In Build에 드래그 앤 드롭하기
+	2단계 : 플랫폼 전환 및 플랫폼 환경 설정
+		안드로이드 전환 :	[Switch Platform] 버튼 클릭	->	[Player Settings] 버튼을 눌러 Player 설정창을 띄움.
+		해상도 설정 :  [Player Settings] 에서 Resolution and Presentation 설정에서 Fullscreen Mode를 "Windowed", Default Window Width(Height)를 640 x 960(예시)으로 설정
+	3단계 : 빌드
+		Build : 실행 파일만 만드는 기능
+		Build And Run : 빌드가 끝나면 실행시켜주는 기능
+		[Build]를 눌러 build 폴더를 만든 후 그 안에 저장하도록 한다.
+
+※ 모바일 환경 빌드 (안드로이드 빌드를 위해 안드로인드 SDK가 설치되어 있어야함)
+	1단계 : 씬 파일 등록(PC와 동일)
+	2단계 : 플랫폼 전환 및 플랫폼 환경 설정
+		안드로이드 전환 :	Android 선택 후 [Switch Platform] 버튼 클릭	->	[Player Settings] 버튼을 눌러 Player 설정창을 띄움.
+		세로 화면으로 게임 진행 : Resolution and Presentation 설정에서 Default Orientation을 "Portrait"로 설정, 가로 모드의 경우, "Landscape" 선택
+	3단계 : 빌드 (PC와 동일)
+	
+※ 게임 파일을 안드로이드 폰에 설치하는 방법 : USB 데이터 케이블로 폰에 넣거나 이메일로 파일 첨부하고 파일을 다운로드해 폰에 넣으면 됨	->	폰의 파일 관리 앱으로 해당 파일 선택해 설치함.
+
+
+
++ 추가내용
+Window - Animation(ctrl + 6) : 애니메이션 동작 설정하는 곳
+Window - Animation - Animator : 애니메이션 동작 연결하는 곳 (Tree로 구성됨)
+	ex) Walking Tree -> Standing Tree, Standing Tree -> Walking Tree로 Make Transition을 각각 연결하면 해당 Tree에서 어떤 조건을 만족하면 다음 트리로 이동한다.
+
+※ 2D의 경우 x, y축을 가진 값 변수 2개를 선언해야 하고 (z축 제외), 각 Blend Tree 안의 Blend Type를 "2D Simple Directional", Parameters은 "x축 변수, y축 변수"를 설정해야 한다!
+※ 충돌 검사의 경우 Layer를 따로 추가하여 해당 Layer를 통과하지 못하도록 설정해야 한다!
+
+★ FindFirstObjectByType<>와 GetComponent<>의 차이점
+FindFirstObjectByType<> : 하이어라키에 있는 모든 객체의 <> 컴포넌트를 검색해서 리턴 (다중객체)
+GetComponent<> : 해당 스크립트가 적용된 객체의 <> 컴포넌트를 검색해서 리턴 (단일객체)		=>	검색 범위 차이
+
+※ 다른 씬의 맵 이동 방법과 같은 신의 맵 이동하는 방법을 하나의 스크립트에 섞여스는 건 추천x (예를들어 bool 변수를 만들어서 true로 체크하면 씬의 이동이 일어나는데 왔다갔다하면 transform 변수가 파괴되다가 새로 생성되면서 false로 초기화하기 때문)
+
+★ AudioManager Object를 따로 만들어서 관리하려는 경우, 스크립트 안에 Sound 클래스를 새로 만들고 AudioManager 클래스 안에 sound 배열 변수를 생성하고 빌드를 하면 오브젝트에 할당된 스크립트 안에 sound 배열이 표시되지 않는다. 이를 해결하려면 Sound 클래스 선언 위에 [System.Serializable]를 선언하고 	AudioManager 클래스 안에 sound 배열변수 선언위에  [SerializeField]를 선언해야한다!
+
+AudioManager.cs
+
+[System.Serializable]   
+public class Sound
+{
+    public string name;     // 사운드 이름
+
+    public AudioClip clip;  // 사운드 파일
+    private AudioSource source; // 사운드 플레이어
+
+    public float Volumn;
+    public bool loop;
+
+    public void SetSource(AudioSource source)
+    {
+        this.source = source;
+        this.source.clip = clip;
+        this.source.loop = loop;
+    }
+
+    public void Play()
+    {
+        source.Play();
+    }
+
+    public void Stop()
+    {
+        source.Stop();
+    }
+
+    public void SetLoop()
+    {
+        source.loop = true;
+    }
+
+    public void SetLoopCancel()
+    {
+        source.loop = false;
+    }
+
+    public void SetVolumn()
+    {
+        source.volume = Volumn;
+    }
+}
+
+public class AudioManager : MonoBehaviour
+{
+    static public AudioManager instance;
+
+    // 배열을 Unity안에 보이도록 만들어야 함.
+    [SerializeField]
+    public Sound[] sounds;
+...
+}
+
+★ IsOwner 와 싱글턴 패턴
+IsOwner : 멀티플레이어 네트워크 상에서 "이 오브젝트의 주인이 나인지" 확인하는 Network 내장 프로퍼티, NetworkBehaviour 내에서 주로 사용, 특정 오브젝트에만 적용
+싱글턴 패턴 : SW 디자인 패턴 중 하나로, 전역에서 단 하나의 인스턴스를 보장, MonoBehaviour 기반 매니저 클래스에서 사용, 전체 프로젝트 전역에 적용
+
+★ 변수형 ulong
+Unity Netcode에서 Client ID (플레이어 고유 식별번호)를 관리하는 자료형
+
+★★★ 유니티 한글 폰트 적용하는 방법
+1. [Window] - [TextMeshPro] - [Font Asset Creator] 클릭하고
+2. 자신이 사용할 폰트 애셋을 드래그 한다음 Padding : 4, Fast, 4096 x4096, Custom Range로 설정후
+3. Character Sequence (Decimal) 안에서 32-126 (영어범위), 44032-55203 (한글 범위), 12593-12643 (한글 자모), 8200-9900 (특수문자)를 입력하고 Generate Font Atlas를 클릭한 다음 save하고 적용시킨다. (단, 안에 괄호는 이 숫자 범위가 뭔지 얘기할 뿐, 괄호에 있는 글자를 빼고 숫자만 입력한다.)
+
+- 유니티 버전 관리 시스템(UVCS)
+- https://support.unity.com/hc/ko/articles/
+- https://teinoi.tistory.com/
+
+※ 유니티 Transform 컴포넌트의 특성
+내부 각도를 0 ~ 360도로 처리하기 위해 0도보다 작아지면 -1도가 아닌 359도로 자동 연산하기 때문에 90도를 넘은 것으로 보아 자꾸만 바닥을 내려다 보는 현상 발생
+-> 이를 해결하기 위해 유니티 내부에서 자동 변환하기 전에 -90 ~ 90도로 제한하는 코드까지 적용하고 그 각도로 회전시킨다.
+
+※ 리지드 바디 vs 캐릭터 컨트롤러
+리지드 바디: 복잡한 물리 연산을 하는 함수들이 있음, but 메모리를 많이 차지	->	오브젝트 안에 리지드바디가 많을수록 프레임 저하
+캐릭터 컨트롤러: 중력이나 충돌 등의 간단한 물리 연산만을 필요로 함. 충돌체 포함하고 있으며 간단한 중력 적용과 충돌 처리에 대한 기능 구현됨.
+
+※ RaycastHit의 out 키워드
+일반적인 파라미터는 메모리 값 복사해 읽기 때문에 함수 안 원본 파라미터를 수정할 수 없음. 이를 위해 ref 또는 out 키워드가 붙은 파라미터를 이용해 메모리 주소를 복사해 변수를 직접 가리키기 때문에 원본 값을 수정할 수 있음. 특히, out 키워드가 붙은 파라미터는 반드시 함수안에서 파라미터에 값을 할당한 것을 요구한다는 특징이 있음.
